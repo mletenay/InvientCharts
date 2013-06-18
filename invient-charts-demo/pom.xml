@@ -15,13 +15,22 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.google.gwt</groupId>
-			<artifactId>gwt-user</artifactId>
-		</dependency>
+      		<groupId>javax.servlet</groupId>
+    	  	<artifactId>servlet-api</artifactId>
+    	</dependency>
+		
+	    <dependency>
+	      	<groupId>com.vaadin</groupId>
+      		<artifactId>vaadin-server</artifactId>
+    	</dependency>
+    	<dependency>
+	      	<groupId>com.vaadin</groupId>
+	      	<artifactId>vaadin-client-compiled</artifactId>
+    	</dependency>
+	    <dependency>
+      		<groupId>com.vaadin</groupId>
+      		<artifactId>vaadin-themes</artifactId>
+    	</dependency>
 		<dependency>
 			<groupId>com.invient.vaadin.charts</groupId>
 			<artifactId>invient-charts-addon</artifactId>
@@ -81,9 +90,9 @@
 			</plugin>
 
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>gwt-maven-plugin</artifactId>
-				<version>${gwt.plugin.version}</version>
+		        <groupId>com.vaadin</groupId>
+		        <artifactId>vaadin-maven-plugin</artifactId>
+				<version>${vaadin-maven-plugin.version}</version>
 				<configuration>
 					<webappDirectory>${project.build.directory}/${project.build.finalName}/VAADIN/widgetsets
 					</webappDirectory>
@@ -102,24 +111,12 @@
 						</goals>
 					</execution>
 				</executions>
-				<dependencies>
-					<dependency>
-						<groupId>com.google.gwt</groupId>
-						<artifactId>gwt-dev</artifactId>
-						<version>${gwt.version}</version>
-					</dependency>
-					<dependency>
-						<groupId>com.google.gwt</groupId>
-						<artifactId>gwt-user</artifactId>
-						<version>${gwt.version}</version>
-					</dependency>
-				</dependencies>
 			</plugin>
 
 			<plugin>
-				<groupId>com.vaadin</groupId>
-				<artifactId>vaadin-maven-plugin</artifactId>
-				<version>1.0.2</version>
+		        <groupId>com.vaadin</groupId>
+		        <artifactId>vaadin-maven-plugin</artifactId>
+				<version>${vaadin-maven-plugin.version}</version>
 				<executions>
 					<execution>
 						<configuration>

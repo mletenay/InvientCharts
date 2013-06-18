@@ -23,9 +23,6 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.vaadin.terminal.PaintException;
-import com.vaadin.terminal.PaintTarget;
-
 import com.invient.vaadin.charts.InvientCharts.DateTimeSeries;
 import com.invient.vaadin.charts.InvientCharts.DecimalPoint;
 import com.invient.vaadin.charts.InvientCharts.Point;
@@ -87,6 +84,8 @@ import com.invient.vaadin.charts.InvientChartsConfig.XAxis;
 import com.invient.vaadin.charts.InvientChartsConfig.XAxisDataLabel;
 import com.invient.vaadin.charts.InvientChartsConfig.YAxis;
 import com.invient.vaadin.charts.InvientChartsConfig.YAxisDataLabel;
+import com.vaadin.server.PaintException;
+import com.vaadin.server.PaintTarget;
 
 /**
  * A utility class used by {@link InvientCharts} to write its state to the UIDL

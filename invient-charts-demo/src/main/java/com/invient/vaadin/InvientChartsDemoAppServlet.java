@@ -15,35 +15,41 @@
  */
 package com.invient.vaadin;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
 
-import com.vaadin.Application;
-import com.vaadin.terminal.gwt.server.ApplicationServlet;
-import com.vaadin.ui.Window;
+import org.jsoup.nodes.Element;
+
+import com.vaadin.server.BootstrapFragmentResponse;
+import com.vaadin.server.BootstrapListener;
+import com.vaadin.server.BootstrapPageResponse;
+import com.vaadin.server.SessionInitEvent;
+import com.vaadin.server.SessionInitListener;
+import com.vaadin.server.VaadinServlet;
 
 @SuppressWarnings("serial")
-public class InvientChartsDemoAppServlet extends ApplicationServlet {
+public class InvientChartsDemoAppServlet extends VaadinServlet implements BootstrapListener {
 
-	/**
-	 * {@inheritDoc}
-	 */
     @Override
-    protected void writeAjaxPageHtmlVaadinScripts(Window window,
-            String themeName, Application application, BufferedWriter page,
-            String appUrl, String themeUri, String appId,
-            HttpServletRequest request) throws ServletException, IOException {
-    	page.write("<script type=\"text/javascript\">\n");
-        page.write("//<![CDATA[\n");
-        page.write("document.write(\"<script language='javascript' src='" + request.getContextPath() + "/VAADIN/js/jquery/jquery-1.4.4.min.js'><\\/script>\");\n");
-        page.write("document.write(\"<script language='javascript' src='" + request.getContextPath() + "/VAADIN/js/highcharts/highcharts.js'><\\/script>\");\n");
-        page.write("document.write(\"<script language='javascript' src='" + request.getContextPath() + "/VAADIN/js/highcharts/modules/exporting.js'><\\/script>\");\n");
-        page.write("//]]>\n</script>\n");
-        super.writeAjaxPageHtmlVaadinScripts(window, themeName, application,
-                page, appUrl, themeUri, appId, request);
+    protected void servletInitialized() throws ServletException {
+        super.servletInitialized();
+        getService().addSessionInitListener(new SessionInitListener() {
+            @Override
+            public void sessionInit(SessionInitEvent event) {
+                event.getSession().addBootstrapListener(InvientChartsDemoAppServlet.this);
+            }
+        });
     }
-
+    
+	@Override
+	public void modifyBootstrapPage(BootstrapPageResponse response) {
+	  Element page = response.getDocument().head();
+      page.append("<script language='javascript' src='" + response.getRequest().getContextPath() + "/VAADIN/js/jquery/jquery-1.4.4.min.js'><\\/script>\n");
+      page.append("<script language='javascript' src='" + response.getRequest().getContextPath() + "/VAADIN/js/highcharts/highcharts.js'><\\/script>\n");
+      page.append("<script language='javascript' src='" + response.getRequest().getContextPath() + "/VAADIN/js/highcharts/modules/exporting.js'><\\/script>\n");
+    }
+	
+    @Override
+	public void modifyBootstrapFragment(BootstrapFragmentResponse response) {
+	  // nothing to do
+	}
 }

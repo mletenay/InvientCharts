@@ -30,12 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.vaadin.terminal.PaintException;
-import com.vaadin.terminal.PaintTarget;
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.ClientWidget;
-import com.vaadin.ui.Component;
-
 import com.invient.vaadin.charts.InvientCharts.SeriesCUR.SeriesCURType;
 import com.invient.vaadin.charts.InvientChartsConfig.Axis;
 import com.invient.vaadin.charts.InvientChartsConfig.AxisBase.PlotBand;
@@ -47,7 +41,11 @@ import com.invient.vaadin.charts.InvientChartsConfig.SubTitle;
 import com.invient.vaadin.charts.InvientChartsConfig.Title;
 import com.invient.vaadin.charts.InvientChartsConfig.XAxis;
 import com.invient.vaadin.charts.InvientChartsConfig.YAxis;
-import com.invient.vaadin.charts.widgetset.client.ui.VInvientCharts;
+import com.vaadin.server.PaintException;
+import com.vaadin.server.PaintTarget;
+import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.LegacyComponent;
 
 /**
  * A Vaddin component representing charts. It is a the main class of
@@ -76,8 +74,7 @@ import com.invient.vaadin.charts.widgetset.client.ui.VInvientCharts;
  * 
  */
 @SuppressWarnings("serial")
-@ClientWidget(VInvientCharts.class)
-public class InvientCharts extends AbstractComponent {
+public class InvientCharts extends AbstractComponent implements LegacyComponent {
 
     private InvientChartsConfig chartConfig;
     private boolean isRetrieveSVG = false;
@@ -111,7 +108,6 @@ public class InvientCharts extends AbstractComponent {
      */
     @Override
     public void paintContent(PaintTarget target) throws PaintException {
-        super.paintContent(target);
         // Update all series with reference of x and y axis.
         this.setAxisInAllSeriesIfNotSetAlready();
         // Configurations options

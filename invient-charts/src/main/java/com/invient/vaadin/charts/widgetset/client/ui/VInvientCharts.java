@@ -69,10 +69,10 @@ import com.invient.vaadin.charts.widgetset.client.ui.GwtInvientChartsConfig.GwtT
 import com.invient.vaadin.charts.widgetset.client.ui.GwtInvientChartsConfig.GwtXAxisOptions;
 import com.invient.vaadin.charts.widgetset.client.ui.GwtInvientChartsConfig.GwtXAxisOptions.GwtDateTimeLabelFormats;
 import com.invient.vaadin.charts.widgetset.client.ui.GwtInvientChartsConfig.GwtYAxisOptions;
-import com.vaadin.terminal.gwt.client.ApplicationConnection;
-import com.vaadin.terminal.gwt.client.Paintable;
-import com.vaadin.terminal.gwt.client.UIDL;
-import com.vaadin.terminal.gwt.client.VConsole;
+import com.vaadin.client.ApplicationConnection;
+import com.vaadin.client.Paintable;
+import com.vaadin.client.UIDL;
+import com.vaadin.client.VConsole;
 
 /**
  * Client side widget which communicates with the server. Messages from the
@@ -267,25 +267,7 @@ public class VInvientCharts extends GwtInvientCharts implements Paintable /*
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setHeight(String height) {
-        super.setHeight(height);
-        updateChartSize();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setWidth(String width) {
-        super.setWidth(width);
-        updateChartSize();
-    }
-
-    private void updateChartSize() {
+    protected void updateChartSize() {
         if (chart != null) {
             updateChartSize(getElement().getOffsetWidth(), getElement().getOffsetHeight());
         }

@@ -25,23 +25,6 @@ import java.util.GregorianCalendar;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.util.HierarchicalContainer;
-import com.vaadin.terminal.Sizeable;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.HorizontalSplitPanel;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.ProgressIndicator;
-import com.vaadin.ui.TextArea;
-import com.vaadin.ui.Tree;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-
 import com.invient.vaadin.charts.Color;
 import com.invient.vaadin.charts.Color.RGB;
 import com.invient.vaadin.charts.Color.RGBA;
@@ -122,9 +105,26 @@ import com.invient.vaadin.charts.InvientChartsConfig.XAxis;
 import com.invient.vaadin.charts.InvientChartsConfig.XAxisDataLabel;
 import com.invient.vaadin.charts.InvientChartsConfig.YAxis;
 import com.invient.vaadin.charts.InvientChartsConfig.YAxisDataLabel;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.util.HierarchicalContainer;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.HorizontalSplitPanel;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.ProgressIndicator;
+import com.vaadin.ui.TextArea;
+import com.vaadin.ui.Tree;
+import com.vaadin.ui.VerticalLayout;
 
 @SuppressWarnings("serial")
-public class InvientChartsDemoWin extends Window {
+public class InvientChartsDemoPanel extends Panel {
 
     private final HorizontalSplitPanel mainSplit;
     private final VerticalLayout leftLayout;
@@ -133,12 +133,11 @@ public class InvientChartsDemoWin extends Window {
     private TextArea eventLog = new TextArea();
     private static final String TREE_ITEM_CAPTION_PROP_ID = "ChartType";
 
-    public InvientChartsDemoWin() {
+    public InvientChartsDemoPanel() {
         VerticalLayout mainLayout = new VerticalLayout();
         setContent(mainLayout);
         setSizeFull();
         mainLayout.setSizeFull();
-        setCaption("Invient Charts");
 
         HorizontalLayout infoBar = new HorizontalLayout();
         mainLayout.addComponent(infoBar);
@@ -159,11 +158,12 @@ public class InvientChartsDemoWin extends Window {
         mainSplit.setFirstComponent(leftLayout);
 
         rightLayout = new VerticalLayout();
+        rightLayout.setWidth(100, Unit.PERCENTAGE);
         rightLayout.setSpacing(true);
         rightLayout.setMargin(true);
         mainSplit.setSecondComponent(rightLayout);
 
-        mainSplit.setSplitPosition(200, Sizeable.UNITS_PIXELS);
+        mainSplit.setSplitPosition(200, Unit.PIXELS);
 
         navTree = createChartsTree();
         leftLayout.addComponent(navTree);
@@ -172,14 +172,12 @@ public class InvientChartsDemoWin extends Window {
         eventLog.setStyleName("v-textarea-chart-events-log");
         eventLog.setSizeFull();
         eventLog.setHeight("200px");
-        setTheme("chartdemo");
-
     }
     
     @Override
     public void attach() {
         super.attach();
-        isAppRunningOnGAE = getInvientChartsDemoApp().isAppRunningOnGAE();
+        isAppRunningOnGAE = getInvientChartsDemoUI().isAppRunningOnGAE();
         // Select line chart when the screen is loaded
         navTree.select(DemoSeriesType.LINE.getName() + SEPARATOR
                 + ChartName.BASIC.getName());
@@ -191,8 +189,8 @@ public class InvientChartsDemoWin extends Window {
         return isAppRunningOnGAE;
     }
 
-    private InvientChartsDemoApp getInvientChartsDemoApp() {
-        return (InvientChartsDemoApp) getApplication();
+    private InvientChartsDemoUI getInvientChartsDemoUI() {
+        return (InvientChartsDemoUI) getUI();
     }
 
     private void showChart(String demoSeriesTypeName, String chartNameString) {
@@ -336,12 +334,10 @@ public class InvientChartsDemoWin extends Window {
                 }
                 break;
             default:
-                getApplication().getMainWindow().showNotification(
-                        "Error occurred during chart processing! Try again!!!");
+            	Notification.show("Error occurred during chart processing! Try again!!!");
             }
         } else {
-            getApplication().getMainWindow().showNotification(
-                    "Error occurred during chart processing! Try again!!!");
+        	Notification.show("Error occurred during chart processing! Try again!!!");
         }
     }
 
@@ -2220,19 +2216,16 @@ public class InvientChartsDemoWin extends Window {
             splineThread = new SelfUpdateSplineThread(chart);
             splineThread.start();
         } else {
-            getApplication()
-                    .getMainWindow()
-                    .showNotification(
-                            "This chart does not auto-update because Google App Engine does not support threads.");
+        	Notification.show("This chart does not auto-update because Google App Engine does not support threads.");
         }
     }
 
     private void stopSplineSelfUpdateThread() {
         if (splineThread != null) {
-            synchronized (getApplication()) {
+            synchronized (getUI()) {
                 splineThread.stopUpdating();
                 indicator.setEnabled(false);
-                getApplication().notifyAll();
+                getUI().notifyAll();
             }
         }
     }
@@ -2269,7 +2262,7 @@ public class InvientChartsDemoWin extends Window {
                             .println("InterruptedException occured. Exception message "
                                     + e.getMessage());
                 }
-                synchronized (getApplication()) {
+                synchronized (getUI()) {
                     DateTimeSeries seriesData = (DateTimeSeries) chart
                             .getSeries("Random Data");
                     seriesData.addPoint(new DateTimePoint(seriesData,
@@ -2717,16 +2710,18 @@ public class InvientChartsDemoWin extends Window {
 
     private void registerSVGAndPrintEvent(final InvientCharts chart) {
         GridLayout gridLayout = new GridLayout(2, 1);
-        gridLayout.setWidth("100%");
+        gridLayout.setColumnExpandRatio(0, 50f);
+        gridLayout.setColumnExpandRatio(1, 50f);
+        gridLayout.setWidth(100, Unit.PERCENTAGE);
         gridLayout.setSpacing(true);
         Button svgBtn;
-        gridLayout.addComponent(svgBtn = new Button("Get SVG"));
+        gridLayout.addComponent(svgBtn = new Button("Get SVG"), 0, 0);
         gridLayout.setComponentAlignment(svgBtn, Alignment.MIDDLE_RIGHT);
         Button printBtn;
-        gridLayout.addComponent(printBtn = new Button("Print"));
+        gridLayout.addComponent(printBtn = new Button("Print"), 1, 0);
         gridLayout.setComponentAlignment(printBtn, Alignment.MIDDLE_LEFT);
         rightLayout.addComponent(gridLayout);
-        svgBtn.addListener(new Button.ClickListener() {
+        svgBtn.addClickListener(new Button.ClickListener() {
 
             @Override
             public void buttonClick(ClickEvent event) {
@@ -2741,7 +2736,7 @@ public class InvientChartsDemoWin extends Window {
                 });
             }
         });
-        printBtn.addListener(new Button.ClickListener() {
+        printBtn.addClickListener(new Button.ClickListener() {
 
             @Override
             public void buttonClick(ClickEvent event) {
@@ -3094,14 +3089,14 @@ public class InvientChartsDemoWin extends Window {
         tree.setContainerDataSource(getContainer());
         tree.setImmediate(true);
         tree.setItemCaptionPropertyId(TREE_ITEM_CAPTION_PROP_ID);
-        tree.setItemCaptionMode(Tree.ITEM_CAPTION_MODE_PROPERTY);
+        tree.setItemCaptionMode(ItemCaptionMode.PROPERTY);
         tree.setNullSelectionAllowed(false);
 
         for (Object id : tree.rootItemIds()) {
             tree.expandItemsRecursively(id);
         }
 
-        tree.addListener(new Tree.ValueChangeListener() {
+        tree.addValueChangeListener(new Tree.ValueChangeListener() {
 
             @Override
             public void valueChange(ValueChangeEvent event) {
